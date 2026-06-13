@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADMIN//ACCESS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ── SHARED VARS ── */
+    :root {
+      --bg:          #07080f;
+      --bg-panel:    #0d0f1a;
+      --bg-panel2:   #111422;
+      --border:      #1e2240;
+      --neon-cyan:   #00ffcc;
+      --neon-purple: #b400ff;
+      --neon-red:    #ff2244;
+      --neon-yellow: #ffe600;
+      --neon-green:  #00ff88;
+      --text:        #c8d0e8;
+      --text-dim:    #6a7090;
+      --font-pixel:  'Press Start 2P', monospace;
+      --font-mono:   'Share Tech Mono', monospace;
+      --glow-cyan:   0 0 8px #00ffcc, 0 0 24px #00ffcc44;
+      --glow-red:    0 0 8px #ff2244, 0 0 24px #ff224444;
+      --glow-green:  0 0 8px #00ff88, 0 0 24px #00ff8844;
+      --glow-purple: 0 0 8px #b400ff, 0 0 24px #b400ff44;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        linear-gradient(rgba(0,255,204,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,204,0.015) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+      );
+    }
+
+    /* ════════════════════════════════════════
+       PASSWORD SCREEN
+    ════════════════════════════════════════ */
+    #password-screen {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--bg);
+      gap: 2rem;
+    }
+
+    /* Animated corner brackets */
+    #password-screen::before,
+    #password-screen::after {
+      content: '';
+      position: absolute;
+      width: 60px; height: 60px;
+      border-color: var(--neon-cyan);
+      border-style: solid;
+      opacity: 0.5;
+    }
+    #password-screen::before { top: 2rem; left: 2rem; border-width: 2px 0 0 2px; }
+    #password-screen::after  { bottom: 2rem; right: 2rem; border-width: 0 2px 2px 0; }
+
+    .pw-eyecatch {
+      text-align: center;
+    }
+
+    /* Glitch title effect */
+    .glitch {
+      font-family: var(--font-pixel);
+      font-size: clamp(1rem, 4vw, 2rem);
+      color: var(--neon-cyan);
+      text-shadow: var(--glow-cyan);
+      letter-spacing: 4px;
+      position: relative;
+      display: inline-block;
+      animation: glitch-base 4s infinite;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      font-family: var(--font-pixel);
+    }
+    .glitch::before {
+      color: var(--neon-purple);
+      animation: glitch-1 4s infinite;
+      clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+    }
+    .glitch::after {
+      color: var(--neon-red);
+      animation: glitch-2 4s infinite;
+      clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+    }
+    @keyframes glitch-base {
+      0%,90%,100% { transform: none; }
+      92%         { transform: skew(-1deg); }
+      94%         { transform: skew(1deg); }
+    }
+    @keyframes glitch-1 {
+      0%,89%,100% { transform: none; opacity: 0; }
+      90%         { transform: translate(-3px, 1px); opacity: 0.8; }
+      92%         { transform: translate(3px, -1px); opacity: 0.8; }
+      94%         { opacity: 0; }
+    }
+    @keyframes glitch-2 {
+      0%,91%,100% { transform: none; opacity: 0; }
+      92%         { transform: translate(3px, 2px); opacity: 0.7; }
+      94%         { transform: translate(-3px, -2px); opacity: 0.7; }
+      96%         { opacity: 0; }
+    }
+
+    .pw-subtitle {
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+      margin-top: 1rem;
+    }
+
+    /* Fake system log lines */
+    .pw-log {
+      font-size: 0.8rem;
+      color: var(--neon-green);
+      text-align: left;
+      width: min(480px, 90vw);
+      line-height: 1.9;
+      opacity: 0.7;
+    }
+    .pw-log-line { display: block; }
+    .pw-log-line::before { content: '> '; color: var(--neon-cyan); }
+
+    /* Password input area */
+    .pw-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      width: min(480px, 90vw);
+    }
+
+    .pw-label {
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      align-self: flex-start;
+    }
+
+    .pw-input-wrap {
+      width: 100%;
+      position: relative;
+    }
+
+    .pw-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: var(--font-pixel);
+      font-size: 1.1rem;
+      letter-spacing: 6px;
+      padding: 0.6rem 0.5rem;
+      outline: none;
+      text-align: center;
+      text-shadow: var(--glow-cyan);
+      caret-color: var(--neon-cyan);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .pw-input:focus {
+      border-bottom-color: var(--neon-cyan);
+      box-shadow: 0 4px 12px -4px rgba(0,255,204,0.4);
+    }
+    .pw-input::placeholder { color: rgba(0,255,204,0.2); letter-spacing: 4px; }
+
+    /* Scanline on input */
+    .pw-input-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .pw-input:focus ~ .pw-input-after { transform: scaleX(1); }
+
+    .pw-btn {
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      padding: 0.8rem 2.5rem;
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .pw-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--neon-cyan);
+      transform: translateX(-101%);
+      transition: transform 0.2s ease;
+      z-index: 0;
+    }
+    .pw-btn:hover { color: var(--bg); box-shadow: var(--glow-cyan); }
+    .pw-btn:hover::before { transform: translateX(0); }
+    .pw-btn span { position: relative; z-index: 1; }
+
+    .pw-error {
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      color: var(--neon-red);
+      text-shadow: var(--glow-red);
+      letter-spacing: 2px;
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-5px); }
+      80%     { transform: translateX(5px); }
+    }
+
+    /* ACCESS GRANTED overlay */
+    #access-granted {
+      position: fixed; inset: 0; z-index: 200;
+      display: none;
+      align-items: center; justify-content: center;
+      background: var(--bg);
+      flex-direction: column; gap: 1rem;
+    }
+    #access-granted.show { display: flex; animation: flicker 0.6s ease forwards; }
+    .granted-text {
+      font-family: var(--font-pixel);
+      font-size: clamp(1rem, 4vw, 1.8rem);
+      color: var(--neon-green);
+      text-shadow: var(--glow-green);
+      letter-spacing: 4px;
+      animation: pulse-green 0.5s ease infinite alternate;
+    }
+    @keyframes pulse-green {
+      from { text-shadow: 0 0 8px #00ff88, 0 0 20px #00ff8844; }
+      to   { text-shadow: 0 0 16px #00ff88, 0 0 40px #00ff8888; }
+    }
+    @keyframes flicker {
+      0%  { opacity: 0; }
+      20% { opacity: 1; }
+      25% { opacity: 0.2; }
+      30% { opacity: 1; }
+      35% { opacity: 0.4; }
+      40% { opacity: 1; }
+    }
+    .granted-sub {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+    }
+
+    /* ════════════════════════════════════════
+       ADMIN DASHBOARD (hidden until login)
+    ════════════════════════════════════════ */
+    #admin-app { display: none; }
+    #admin-app.visible { display: block; }
+
+    /* Header */
+    .admin-header {
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0a0c18 0%, var(--bg) 100%);
+      padding: 0 2rem;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .admin-header-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px;
+    }
+    .admin-logo {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.7rem, 2vw, 1rem);
+      color: var(--neon-purple);
+      text-shadow: var(--glow-purple);
+      letter-spacing: 2px;
+    }
+    .admin-logo span { color: var(--neon-cyan); }
+    .admin-back-btn {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.9rem;
+      border-radius: 2px;
+      transition: all 0.15s;
+      letter-spacing: 1px;
+    }
+    .admin-back-btn:hover { color: var(--neon-cyan); border-color: var(--neon-cyan); }
+
+    /* Layout */
+    .admin-layout {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 300px 1fr;
+      gap: 1.5rem; padding: 1.5rem;
+    }
+
+    /* Panels */
+    .panel {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 2px; padding: 1.5rem; margin-bottom: 1rem;
+      position: relative;
+    }
+    .panel::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+      opacity: 0.5;
+    }
+    .panel-title {
+      font-family: var(--font-pixel); font-size: 0.7rem;
+      color: var(--neon-purple); text-shadow: var(--glow-purple);
+      letter-spacing: 2px; margin-bottom: 1.2rem; text-transform: uppercase;
+    }
+
+    /* Inputs */
+    .input {
+      width: 100%; background: #0a0c18;
+      border: 1px solid var(--border); border-radius: 2px;
+      color: var(--text); font-family: var(--font-mono);
+      font-size: 1rem; padding: 0.65rem 0.85rem;
+      outline: none; transition: border-color 0.2s;
+      margin-bottom: 0.6rem;
+    }
+    .input:focus { border-color: var(--neon-purple); box-shadow: 0 0 0 1px var(--neon-purple); }
+    .input::placeholder { color: var(--text-dim); }
+    select.input option { background: #0d0f1a; }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-pixel); font-size: 0.65rem;
+      letter-spacing: 1px; padding: 0.7rem 1.2rem;
+      border: 1px solid var(--border); background: var(--bg-panel2);
+      color: var(--text); cursor: pointer; border-radius: 2px;
+      transition: all 0.15s; text-transform: uppercase; white-space: nowrap;
+    }
+    .btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .btn-primary { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(180,0,255,0.07); }
+    .btn-primary:hover { background: rgba(180,0,255,0.15); box-shadow: var(--glow-purple); }
+    .btn-success { border-color: var(--neon-green); color: var(--neon-green); background: rgba(0,255,136,0.07); }
+    .btn-success:hover { background: rgba(0,255,136,0.15); box-shadow: var(--glow-green); }
+    .btn-danger { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255,34,68,0.07); }
+    .btn-danger:hover { background: rgba(255,34,68,0.15); box-shadow: var(--glow-red); }
+    .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.55rem; }
+    .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.3rem; }
+
+    /* Game list */
+    .game-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .game-item {
+      padding: 0.85rem 1rem; border: 1px solid var(--border);
+      background: var(--bg-panel2); cursor: pointer;
+      border-radius: 2px; position: relative; overflow: hidden;
+      transition: all 0.15s; display: flex; justify-content: space-between; align-items: center;
+    }
+    .game-item::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--neon-purple); opacity: 0; transition: opacity 0.15s;
+    }
+    .game-item:hover, .game-item.active { border-color: var(--neon-purple); background: rgba(180,0,255,0.05); }
+    .game-item:hover::before, .game-item.active::before { opacity: 1; }
+    .game-item-name { font-family: var(--font-pixel); font-size: 0.55rem; color: #fff; }
+    .game-item-meta { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.3rem; }
+    .game-item-left { flex: 1; }
+    .game-item-badge {
+      font-family: var(--font-pixel); font-size: 0.45rem;
+      padding: 0.2rem 0.4rem; border-radius: 2px;
+      background: rgba(180,0,255,0.15); border: 1px solid rgba(180,0,255,0.4);
+      color: var(--neon-purple); white-space: nowrap; margin-left: 0.5rem;
+    }
+
+    /* Route list */
+    .route-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
+    .route-item {
+      border: 1px solid var(--border); background: var(--bg-panel2);
+      border-radius: 2px; overflow: hidden;
+    }
+    .route-header {
+      padding: 0.7rem 1rem; display: flex; align-items: center;
+      justify-content: space-between; cursor: pointer; transition: background 0.15s;
+    }
+    .route-header:hover { background: rgba(0,255,204,0.04); }
+    .route-name { font-family: var(--font-pixel); font-size: 0.55rem; color: var(--neon-cyan); }
+    .route-enc-count { font-size: 0.8rem; color: var(--text-dim); }
+    .route-body {
+      display: none; padding: 0.8rem 1rem; border-top: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+    .route-body.open { display: block; }
+    .enc-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+    .enc-tag {
+      font-size: 0.8rem; background: rgba(0,255,204,0.08);
+      border: 1px solid rgba(0,255,204,0.25); color: var(--neon-cyan);
+      padding: 0.2rem 0.55rem; border-radius: 2px; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .enc-remove {
+      cursor: pointer; color: var(--neon-red); font-size: 0.85rem;
+      line-height: 1; transition: text-shadow 0.15s;
+    }
+    .enc-remove:hover { text-shadow: var(--glow-red); }
+    .enc-add-row { display: flex; gap: 0.5rem; }
+    .enc-add-row .input { margin-bottom: 0; flex: 1; }
+
+    /* Empty state */
+    .empty-state {
+      font-size: 0.85rem; color: var(--text-dim);
+      text-align: center; padding: 2rem 0; line-height: 2.3; letter-spacing: 1px;
+    }
+
+    /* Toast notifications */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+      font-family: var(--font-pixel); font-size: 0.6rem;
+      padding: 0.8rem 1.2rem; border-radius: 2px; letter-spacing: 1px;
+      display: none; animation: slideUp 0.3s ease;
+    }
+    #toast.success { background: rgba(0,255,136,0.1); border: 1px solid var(--neon-green); color: var(--neon-green); box-shadow: var(--glow-green); }
+    #toast.error   { background: rgba(255,34,68,0.1);  border: 1px solid var(--neon-red);   color: var(--neon-red);   box-shadow: var(--glow-red); }
+    @keyframes slideUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+    /* Utilities */
+    .hidden { display: none !important; }
+    .separator { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
+
+    @media (max-width: 768px) {
+      .admin-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<!-- ══════════════════════════════════════
+     PASSWORD SCREEN
+══════════════════════════════════════ -->
+<div id="password-screen">
+  <div class="pw-eyecatch">
+    <div class="glitch" data-text="ADMIN//ACCESS">ADMIN//ACCESS</div>
+    <div class="pw-subtitle">RESTRICTED SYSTEM — AUTHORISATION REQUIRED</div>
+  </div>
+
+  <div class="pw-log" id="pw-log">
+    <span class="pw-log-line" style="animation-delay:0s">Initialising secure channel...</span>
+    <span class="pw-log-line" style="animation-delay:0.4s">Encrypting handshake protocol...</span>
+    <span class="pw-log-line" style="animation-delay:0.8s">Awaiting credentials...</span>
+  </div>
+
+  <div class="pw-form">
+    <div class="pw-label">ENTER ACCESS CODE</div>
+    <div class="pw-input-wrap">
+      <input
+        type="password"
+        id="pw-input"
+        class="pw-input"
+        placeholder="········"
+        autocomplete="off"
+        maxlength="32"
+      />
+    </div>
+    <button class="pw-btn" id="pw-submit"><span>AUTHENTICATE ▶</span></button>
+    <div id="pw-error" class="pw-error hidden">⚠ ACCESS DENIED — INVALID CODE</div>
+  </div>
+</div>
+
+<!-- ACCESS GRANTED flash -->
+<div id="access-granted">
+  <div class="granted-text">✔ ACCESS GRANTED</div>
+  <div class="granted-sub">LOADING ADMIN CONSOLE...</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN DASHBOARD
+══════════════════════════════════════ -->
+<div id="admin-app">
+
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="admin-logo">ADMIN<span>//</span>CONSOLE</div>
+      <a href="/" class="admin-back-btn">◀ BACK TO TRACKER</a>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+
+    <!-- LEFT: Game List + Add Game -->
+    <aside>
+      <div class="panel">
+        <div class="panel-title">◈ ADD NEW GAME</div>
+        <input class="input" id="new-game-name" placeholder="Game name (e.g. Pokémon Emerald)" />
+        <input class="input" id="new-game-badges" type="number" min="1" max="18" value="8" placeholder="Badge count" />
+        <button class="btn btn-success" id="add-game-btn">+ ADD GAME</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">◈ CUSTOM GAMES</div>
+        <div id="game-list" class="game-list">
+          <div class="empty-state">NO CUSTOM GAMES YET.<br/>ADD ONE ABOVE.</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Route Editor -->
+    <section>
+      <div id="no-game-msg" class="panel">
+        <div class="empty-state">
+          ◈ SELECT A GAME<br/>FROM THE LEFT PANEL<br/>TO MANAGE ITS ROUTES
+        </div>
+      </div>
+
+      <div id="route-editor" class="hidden">
+        <div class="panel">
+          <div class="panel-title" id="route-editor-title">◈ ROUTES</div>
+
+          <!-- Add Route -->
+          <div style="display:flex; gap:0.6rem; margin-bottom:1rem; flex-wrap:wrap;">
+            <input class="input" id="new-route-name" placeholder="Route name (e.g. Route 101)" style="flex:1; margin-bottom:0;" />
+            <button class="btn btn-primary" id="add-route-btn">+ ADD ROUTE</button>
+          </div>
+          <hr class="separator" />
+
+          <!-- Route list renders here -->
+          <div id="route-list" class="route-list"></div>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="panel" style="border-color: rgba(255,34,68,0.2);">
+          <div class="panel-title" style="color:var(--neon-red);">⚠ DANGER ZONE</div>
+          <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1rem; line-height:1.7;">
+            Deleting a game removes all its routes permanently from your custom data.
+            Built-in Gen 1 games cannot be deleted from here.
+          </p>
+          <button class="btn btn-danger" id="delete-game-btn">✕ DELETE THIS GAME</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  CONFIG — change this to update the password
+// ─────────────────────────────────────────────
+const ADMIN_PASSWORD = 'NUZLOCKE';
+
+// ─────────────────────────────────────────────
+//  PASSWORD SCREEN
+// ─────────────────────────────────────────────
+let selectedGame = null;
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value.toUpperCase().trim();
+  const err = document.getElementById('pw-error');
+
+  if (val === ADMIN_PASSWORD) {
+    err.classList.add('hidden');
+    // Flash the ACCESS GRANTED screen, then show the app
+    const granted = document.getElementById('access-granted');
+    granted.classList.add('show');
+    setTimeout(() => {
+      granted.style.display = 'none';
+      document.getElementById('password-screen').style.display = 'none';
+      document.getElementById('admin-app').classList.add('visible');
+      loadCustomGames();
+    }, 1800);
+  } else {
+    err.classList.remove('hidden');
+    document.getElementById('pw-input').value = '';
+    // Red flash on the input
+    const input = document.getElementById('pw-input');
+    input.style.borderBottomColor = 'var(--neon-red)';
+    input.style.color = 'var(--neon-red)';
+    setTimeout(() => {
+      input.style.borderBottomColor = '';
+      input.style.color = '';
+    }, 800);
+  }
+}
+
+document.getElementById('pw-submit').addEventListener('click', checkPassword);
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+
+// ─────────────────────────────────────────────
+//  API HELPERS
+// ─────────────────────────────────────────────
+const api = {
+  get:    url        => fetch(url).then(r => r.json()),
+  post:   (url, b)   => fetch(url, { method:'POST',   headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) }).then(r => r.json()),
+  patch:  (url, b)   => fetch(url, { method:'PATCH',  headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) }).then(r => r.json()),
+  delete: url        => fetch(url, { method:'DELETE' }).then(r => r.json()),
+};
+
+// ─────────────────────────────────────────────
+//  TOAST
+// ─────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = type;
+  el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2500);
+}
+
+// ─────────────────────────────────────────────
+//  GAMES
+// ─────────────────────────────────────────────
+async function loadCustomGames() {
+  const data = await api.get('/api/gamedata');
+  renderGameList(data);
+}
+
+function renderGameList(data) {
+  const container = document.getElementById('game-list');
+  const games = Object.keys(data);
+
+  if (!games.length) {
+    container.innerHTML = '<div class="empty-state">NO CUSTOM GAMES YET.<br/>ADD ONE ABOVE.</div>';
+    return;
+  }
+
+  container.innerHTML = games.map(name => `
+    <div class="game-item ${selectedGame === name ? 'active' : ''}" data-game="${escHtml(name)}">
+      <div class="game-item-left">
+        <div class="game-item-name">${escHtml(name)}</div>
+        <div class="game-item-meta">${data[name].routes.length} routes</div>
+      </div>
+      <span class="game-item-badge">${data[name].badgeCount} BADGES</span>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.game-item').forEach(el => {
+    el.addEventListener('click', () => selectGame(el.dataset.game));
+  });
+}
+
+async function addGame() {
+  const name   = document.getElementById('new-game-name').value.trim();
+  const badges = Number(document.getElementById('new-game-badges').value) || 8;
+  if (!name) { toast('Enter a game name!', 'error'); return; }
+
+  const res = await api.post('/api/admin/games', { name, badgeCount: badges });
+  if (res.error) { toast(res.error, 'error'); return; }
+
+  document.getElementById('new-game-name').value   = '';
+  document.getElementById('new-game-badges').value = '8';
+  toast(`✔ ${name} added!`);
+  await loadCustomGames();
+  selectGame(name);
+}
+
+async function deleteGame() {
+  if (!selectedGame) return;
+  if (!confirm(`Delete "${selectedGame}" and all its routes? This cannot be undone.`)) return;
+  const encoded = encodeURIComponent(selectedGame);
+  await api.delete(`/api/admin/games/${encoded}`);
+  toast(`✔ Game deleted.`);
+  selectedGame = null;
+  document.getElementById('route-editor').classList.add('hidden');
+  document.getElementById('no-game-msg').classList.remove('hidden');
+  await loadCustomGames();
+}
+
+// ─────────────────────────────────────────────
+//  ROUTES
+// ─────────────────────────────────────────────
+async function selectGame(name) {
+  selectedGame = name;
+  document.getElementById('no-game-msg').classList.add('hidden');
+  document.getElementById('route-editor').classList.remove('hidden');
+  document.getElementById('route-editor-title').textContent = `◈ ROUTES — ${name.toUpperCase()}`;
+
+  const data  = await api.get('/api/gamedata');
+  const game  = data[name];
+  if (!game) return;
+
+  renderRoutes(game.routes, name);
+
+  // Refresh sidebar highlight
+  document.querySelectorAll('.game-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.game === name);
+  });
+}
+
+function renderRoutes(routes, gameName) {
+  const container = document.getElementById('route-list');
+  if (!routes.length) {
+    container.innerHTML = '<div class="empty-state">NO ROUTES YET.<br/>ADD ONE ABOVE.</div>';
+    return;
+  }
+
+  container.innerHTML = routes.map((route, i) => `
+    <div class="route-item" data-route="${escHtml(route.name)}">
+      <div class="route-header" onclick="toggleRoute(this)">
+        <div>
+          <span class="route-name">${escHtml(route.name)}</span>
+          <span class="route-enc-count"> · ${route.encounters.length} encounters</span>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <button class="btn btn-danger btn-sm" onclick="deleteRoute(event, '${escHtml(route.name)}')">✕</button>
+          <span style="color:var(--text-dim);font-size:0.8rem;">▼</span>
+        </div>
+      </div>
+      <div class="route-body" id="route-body-${i}">
+        <div class="enc-tags" id="enc-tags-${i}">
+          ${route.encounters.map(enc => `
+            <span class="enc-tag">
+              ${escHtml(enc)}
+              <span class="enc-remove" onclick="removeEncounter('${escHtml(route.name)}', '${escHtml(enc)}', ${i})">×</span>
+            </span>
+          `).join('')}
+        </div>
+        <div class="enc-add-row">
+          <input class="input" id="enc-input-${i}" placeholder="Add Pokémon..." onkeydown="if(event.key==='Enter') addEncounter('${escHtml(route.name)}', ${i})" />
+          <button class="btn btn-success btn-sm" onclick="addEncounter('${escHtml(route.name)}', ${i})">+ ADD</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleRoute(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+async function addRoute() {
+  const name = document.getElementById('new-route-name').value.trim();
+  if (!name) { toast('Enter a route name!', 'error'); return; }
+  const encoded = encodeURIComponent(selectedGame);
+  const res = await api.post(`/api/admin/games/${encoded}/routes`, { routeName: name, encounters: [] });
+  if (res.error) { toast(res.error, 'error'); return; }
+  document.getElementById('new-route-name').value = '';
+  toast(`✔ ${name} added!`);
+  await selectGame(selectedGame);
+}
+
+async function deleteRoute(e, routeName) {
+  e.stopPropagation(); // prevent the accordion from toggling
+  if (!confirm(`Delete route "${routeName}"?`)) return;
+  const ge = encodeURIComponent(selectedGame);
+  const re = encodeURIComponent(routeName);
+  await api.delete(`/api/admin/games/${ge}/routes/${re}`);
+  toast(`✔ Route deleted.`);
+  await selectGame(selectedGame);
+}
+
+async function addEncounter(routeName, idx) {
+  const input = document.getElementById(`enc-input-${idx}`);
+  const name  = input.value.trim();
+  if (!name) return;
+
+  // Get current encounters and append
+  const data  = await api.get('/api/gamedata');
+  const route = data[selectedGame]?.routes.find(r => r.name === routeName);
+  if (!route) return;
+
+  if (route.encounters.includes(name)) { toast('Already in list!', 'error'); return; }
+
+  const updated = [...route.encounters, name];
+  const ge = encodeURIComponent(selectedGame);
+  const re = encodeURIComponent(routeName);
+  await api.patch(`/api/admin/games/${ge}/routes/${re}`, { encounters: updated });
+
+  input.value = '';
+  toast(`✔ ${name} added!`);
+  await selectGame(selectedGame);
+}
+
+async function removeEncounter(routeName, encName, idx) {
+  const data  = await api.get('/api/gamedata');
+  const route = data[selectedGame]?.routes.find(r => r.name === routeName);
+  if (!route) return;
+
+  const updated = route.encounters.filter(e => e !== encName);
+  const ge = encodeURIComponent(selectedGame);
+  const re = encodeURIComponent(routeName);
+  await api.patch(`/api/admin/games/${ge}/routes/${re}`, { encounters: updated });
+  toast(`✔ ${encName} removed.`);
+  await selectGame(selectedGame);
+}
+
+// ─────────────────────────────────────────────
+//  WIRING
+// ─────────────────────────────────────────────
+document.getElementById('add-game-btn').addEventListener('click', addGame);
+document.getElementById('add-route-btn').addEventListener('click', addRoute);
+document.getElementById('delete-game-btn').addEventListener('click', deleteGame);
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>

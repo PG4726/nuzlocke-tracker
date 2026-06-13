@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;Nuzlocke Tracker&gt;</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20width%3D%2232%22%20height%3D%2232%22%3E%0A%20%20%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%224%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Cellipse%20cx%3D%2216%22%20cy%3D%2213%22%20rx%3D%229%22%20ry%3D%228%22%20fill%3D%22%2300ffcc%22/%3E%0A%20%20%3Crect%20x%3D%2210%22%20y%3D%2219%22%20width%3D%2212%22%20height%3D%226%22%20rx%3D%221%22%20fill%3D%22%2300ffcc%22/%3E%0A%20%20%3Crect%20x%3D%2211%22%20y%3D%2211%22%20width%3D%224%22%20height%3D%225%22%20rx%3D%221%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Crect%20x%3D%2217%22%20y%3D%2211%22%20width%3D%224%22%20height%3D%225%22%20rx%3D%221%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Crect%20x%3D%2215%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Crect%20x%3D%2211%22%20y%3D%2221%22%20width%3D%222%22%20height%3D%223%22%20rx%3D%220.5%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2221%22%20width%3D%222%22%20height%3D%223%22%20rx%3D%220.5%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Crect%20x%3D%2217%22%20y%3D%2221%22%20width%3D%222%22%20height%3D%223%22%20rx%3D%220.5%22%20fill%3D%22%2307080f%22/%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2221%22%20width%3D%222%22%20height%3D%223%22%20rx%3D%220.5%22%20fill%3D%22%2307080f%22/%3E%0A%3C/svg%3E">
+
+  <!-- Pixel / retro fonts from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── ROUTE TABLE ── */
+    .routes-legend {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+    }
+    .rl { display: flex; align-items: center; gap: 5px; }
+    .rl-caught  { color: var(--neon-cyan); }
+    .rl-skipped { color: var(--neon-yellow); }
+    .rl-open    { color: var(--text-dim); }
+
+    .route-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.65rem;
+    }
+    .route-table th {
+      text-align: left;
+      color: var(--text-dim);
+      font-size: 0.55rem;
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      white-space: nowrap;
+    }
+    .route-table td {
+      padding: 9px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .route-row-caught  td:first-child { border-left: 2px solid var(--neon-cyan); }
+    .route-row-skipped td:first-child { border-left: 2px solid var(--neon-yellow); }
+    .route-row-open    td:first-child { border-left: 2px solid rgba(255,255,255,0.1); }
+
+    .route-row-caught  { background: rgba(0,255,255,0.03); }
+    .route-row-skipped { background: rgba(255,215,0,0.03); opacity: 0.6; }
+    .route-row-open    { display: table-row; }
+
+    .route-name { color: var(--text-bright); white-space: nowrap; }
+    .route-caught-info { color: var(--neon-cyan); }
+    .route-caught-nick { color: var(--text-dim); font-size: 0.58rem; }
+    .route-encounters  {
+      color: var(--text-dim);
+      font-size: 0.58rem;
+      font-family: 'Share Tech Mono', monospace;
+      max-width: 260px;
+    }
+    .enc-highlight { color: var(--text-bright); }
+
+    .btn-skip {
+      font-size: 0.52rem;
+      padding: 4px 9px;
+      border: 1px solid rgba(255,215,0,0.4);
+      color: var(--neon-yellow);
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-skip:hover    { background: rgba(255,215,0,0.1); }
+    .btn-unskip {
+      font-size: 0.52rem;
+      padding: 4px 9px;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-dim);
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      white-space: nowrap;
+    }
+    .btn-unskip:hover  { border-color: rgba(255,255,255,0.3); color: var(--text-bright); }
+
+    /* ── HALL OF FAME ── */
+    .btn-hof {
+      width: 100%;
+      margin-top: 12px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.03));
+      border: 1px solid var(--neon-yellow);
+      color: var(--neon-yellow);
+      font-size: 0.6rem;
+      letter-spacing: 0.05em;
+      padding: 10px;
+    }
+    .btn-hof:hover {
+      background: rgba(255,215,0,0.15);
+      box-shadow: 0 0 10px rgba(255,215,0,0.3);
+    }
+    .hof-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .hof-title {
+      font-size: 1rem;
+      color: var(--neon-yellow);
+      text-shadow: 0 0 8px rgba(255,215,0,0.5);
+      margin: 0;
+    }
+    .hof-sub {
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      flex: 1;
+    }
+    .hof-external-btn {
+      border-color: var(--neon-yellow);
+      color: var(--neon-yellow);
+      font-size: 0.5rem;
+      white-space: nowrap;
+    }
+    .hof-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hof-card {
+      background: linear-gradient(135deg, rgba(255,215,0,0.04), rgba(0,0,0,0.3));
+      border: 1px solid rgba(255,215,0,0.3);
+      border-left: 3px solid var(--neon-yellow);
+      border-radius: 4px;
+      padding: 16px;
+    }
+    .hof-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .hof-game { font-size: 0.65rem; color: var(--neon-yellow); }
+    .hof-meta { font-size: 0.5rem; color: var(--text-dim); margin-top: 4px; }
+    .hof-won-badge {
+      font-size: 0.5rem;
+      background: rgba(255,215,0,0.15);
+      border: 1px solid var(--neon-yellow);
+      color: var(--neon-yellow);
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+    .hof-sprites {
+      display: flex;
+      gap: 4px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .hof-sprite-wrap {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,215,0,0.15);
+      border-radius: 4px;
+    }
+    .hof-sprite-wrap img { width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; }
+    .hof-sprite-wrap .sprite-unknown { font-size: 1.2rem; color: var(--text-dim); }
+    .hof-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 0.5rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .hof-stat-val { color: var(--text-bright); }
+    .hof-notes {
+      font-size: 0.5rem;
+      color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 8px;
+      margin-top: 4px;
+      white-space: pre-wrap;
+      max-height: 48px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    }
+    .hof-empty {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.55rem;
+      padding: 40px 20px;
+      border: 1px dashed rgba(255,215,0,0.2);
+      border-radius: 4px;
+    }
+
+    /* ── ROUTE LVL COLUMN ── */
+    .route-level-cell { white-space: nowrap; }
+    .route-levels {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--neon-cyan);
+      opacity: 0.85;
+    }
+
+    /* ── STATS TAB ── */
+    .stats-summary {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      flex: 1;
+      min-width: 80px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .stat-val {
+      font-size: 1.1rem;
+      color: var(--text-bright);
+      font-family: 'Press Start 2P', monospace;
+    }
+    .stat-lbl {
+      font-size: 0.42rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+    .stats-chart-wrap {
+      margin-bottom: 20px;
+    }
+    .stats-chart-label {
+      font-size: 0.5rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      letter-spacing: 0.08em;
+    }
+    .death-svg { display: block; max-width: 100%; }
+    .stats-empty-chart {
+      text-align: center;
+      font-size: 0.5rem;
+      color: var(--neon-cyan);
+      padding: 24px;
+      border: 1px dashed rgba(0,255,204,0.2);
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .stats-section-title {
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      margin: 16px 0 8px;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 6px;
+    }
+    .stats-fallen-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stats-fallen-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,34,68,0.04);
+      border: 1px solid rgba(255,34,68,0.1);
+      border-left: 2px solid rgba(255,34,68,0.4);
+      border-radius: 3px;
+      padding: 6px 10px;
+    }
+    .stats-fallen-sprite {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: grayscale(80%);
+      flex-shrink: 0;
+    }
+    .stats-fallen-info { flex: 1; min-width: 0; }
+    .stats-fallen-name {
+      display: block;
+      font-size: 0.52rem;
+      color: var(--text-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stats-fallen-species {
+      display: block;
+      font-size: 0.42rem;
+      color: var(--text-dim);
+    }
+    .stats-fallen-where { font-size: 0.42rem; color: var(--text-dim); text-align: right; flex-shrink: 0; }
+    .stats-fallen-cause { display: block; color: var(--neon-red); }
+    .stats-fallen-loc   { display: block; }
+    .stats-fallen-badge { font-size: 0.5rem; margin-left: 6px; flex-shrink: 0; }
+
+    /* ── HOF INLINE VIEW ── */
+    .hof-sprite-name {
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      text-align: center;
+      font-size: 0.3rem;
+      color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 2px;
+    }
+    .hof-sprite-wrap { position: relative; }
+    .hof-badge-pips  { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 4px; }
+    .hof-pip {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--neon-yellow);
+      box-shadow: 0 0 4px rgba(255,215,0,0.6);
+      display: inline-block;
+    }
+
+    /* ── GYM GUIDE ── */
+    .guide-boss-list { display: flex; flex-direction: column; gap: 14px; }
+    .guide-boss-card {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .guide-boss-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.2);
+      border-left: 3px solid var(--neon-cyan);
+      flex-wrap: wrap;
+    }
+    .guide-boss-name {
+      font-family: var(--font-pixel);
+      font-size: 0.65rem;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+    .guide-boss-meta {
+      font-size: 0.45rem;
+      color: var(--text-dim);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .guide-boss-sep { color: rgba(255,255,255,0.2); }
+    .guide-boss-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+    .guide-badge-label {
+      font-size: 0.42rem;
+      color: var(--neon-yellow);
+      border: 1px solid rgba(255,230,0,0.3);
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+    .guide-recommend {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .guide-rec-label {
+      font-size: 0.38rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+    .guide-type-pill {
+      font-size: 0.38rem;
+      padding: 2px 5px;
+      border-radius: 2px;
+      font-family: var(--font-pixel);
+      white-space: nowrap;
+    }
+    .guide-team { padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+    .guide-mon-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 3px;
+    }
+    .guide-mon-sprite-wrap {
+      width: 48px; height: 48px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.3);
+      border-radius: 3px;
+    }
+    .guide-mon-sprite {
+      width: 44px; height: 44px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .guide-mon-info { flex: 1; min-width: 0; }
+    .guide-mon-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 3px;
+    }
+    .guide-mon-name {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--neon-cyan);
+    }
+    .guide-mon-level {
+      font-size: 0.45rem;
+      color: var(--neon-yellow);
+    }
+    .guide-mon-details {
+      font-size: 0.42rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .guide-detail-label { opacity: 0.6; letter-spacing: 0.05em; }
+    .guide-detail-val   { color: var(--text-bright); }
+    .guide-detail-sep   { opacity: 0.3; }
+    .guide-moves {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .guide-move {
+      font-size: 0.38rem;
+      font-family: 'Share Tech Mono', monospace;
+      background: rgba(0,255,204,0.06);
+      border: 1px solid rgba(0,255,204,0.15);
+      color: var(--neon-cyan);
+      padding: 2px 5px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── SCAN LINE OVERLAY (pure CSS effect) ── -->
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- ── TOP HEADER ── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="logo">&lt;Nuzlocke<span class="logo-slash"> </span>Tracker&gt;</h1>
+      <div class="header-right">
+        <button class="dex-btn calc-btn" id="calc-btn" onclick="toggleCalc()" title="Open Damage Calculator">
+          <span class="dex-btn-icon">⚔</span>
+          <span class="dex-btn-label">CALC</span>
+        </button>
+        <button class="dex-btn" id="dex-btn" onclick="toggleDex()" title="Open Pokédex">
+          <span class="dex-btn-icon">◉</span>
+          <span class="dex-btn-label">POKÉDEX</span>
+        </button>
+        <div class="header-sub">SYSTEM ONLINE <span class="blink">▮</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── MAIN LAYOUT ── -->
+  <main class="layout">
+
+    <!-- Sidebar toggle (Notion-style) -->
+    <button id="sidebar-toggle" title="Toggle sidebar" onclick="toggleSidebar()">◀</button>
+
+    <!-- LEFT SIDEBAR: Run List -->
+    <aside class="sidebar" id="sidebar">
+        <div class="panel-title">
+          <span class="panel-icon">◈</span> ACTIVE RUN
+        </div>
+
+        <!-- Currently selected run summary -->
+        <div id="active-run-display">
+          <div class="no-active-run">SELECT OR CREATE A RUN BELOW</div>
+        </div>
+
+        <!-- All Runs drawer toggle -->
+        <button class="runs-drawer-toggle" id="runs-drawer-toggle" onclick="toggleRunsDrawer()">
+          <span>ALL RUNS</span>
+          <span class="rdt-arrow">▼</span>
+        </button>
+        <div class="runs-drawer" id="runs-drawer">
+          <!-- New run form -->
+          <div class="new-run-form">
+            <select id="new-run-input" class="input">
+              <option value="">— Select a game —</option>
+            </select>
+            <button class="btn btn-primary" id="create-run-btn">+ NEW RUN</button>
+          </div>
+          <!-- Run list renders here -->
+          <div id="run-list" class="run-list">
+            <div class="empty-state">NO RUNS FOUND.</div>
+          </div>
+        </div>
+
+        <!-- Hall of Fame link -->
+        <button class="btn btn-hof" id="hof-btn" style="margin-top:1rem">🏆 HALL OF FAME</button>
+    </aside>
+
+    <!-- MAIN CONTENT: Run Detail -->
+    <section class="content" id="content-area">
+      <!-- Shown when no run is selected -->
+      <div class="no-run-selected" id="no-run-msg">
+        <div class="home-screen">
+          <div class="ascii-art">
+            ░▒▓ SELECT A RUN ▓▒░<br/>
+            ─────────────────────<br/>
+            OR CREATE A NEW ONE<br/>
+            TO BEGIN TRACKING
+          </div>
+          <div class="fact-card" id="fact-card">
+            <div class="fact-card-header">
+              <span class="fact-label">◈ DID YOU KNOW?</span>
+              <span class="fact-cat-label" id="fact-cat-label">NUZLOCKE</span>
+            </div>
+            <div class="fact-filters">
+              <button class="fact-filter-btn active" onclick="filterFact(null, this)">ALL</button>
+              <button class="fact-filter-btn" onclick="filterFact('SPEED', this)">SPEED</button>
+              <button class="fact-filter-btn" onclick="filterFact('STATUS', this)">STATUS</button>
+              <button class="fact-filter-btn" onclick="filterFact('ITEMS', this)">ITEMS</button>
+              <button class="fact-filter-btn" onclick="filterFact('LEAD', this)">LEAD</button>
+              <button class="fact-filter-btn" onclick="filterFact('SACRIFICE', this)">SACRIFICE</button>
+              <button class="fact-filter-btn" onclick="filterFact('GRINDING', this)">GRINDING</button>
+              <button class="fact-filter-btn" onclick="filterFact('LORE', this)">LORE</button>
+              <button class="fact-filter-btn" onclick="filterFact('TECH', this)">TECH</button>
+            </div>
+            <div class="fact-text" id="fact-text">Loading...</div>
+            <button class="fact-refresh" id="fact-refresh" title="New tip">↺ NEW TIP</button>
+          </div>
+
+          <!-- Repel Strats Panel -->
+          <div class="repel-strats-card" id="repel-strats-card">
+            <div class="repel-strats-header" onclick="toggleRepelStrats()">
+              <span class="repel-strats-title">◈ REPEL MANIPULATION STRATEGIES</span>
+              <button class="repel-toggle-btn" id="repel-toggle-btn">▼ SHOW</button>
+            </div>
+            <div id="repel-strats-body" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hall of Fame section (hidden until HOF button clicked) -->
+      <div id="hof-section" class="hidden" style="padding:1.5rem 0">
+        <div class="hof-header">
+          <h2 class="hof-title">🏆 HALL OF FAME</h2>
+          <div class="hof-sub">COMPLETED NUZLOCKE RUNS</div>
+          <a href="/halloffame.html" class="btn btn-sm hof-external-btn">⬡ OPEN FULL PAGE</a>
+        </div>
+        <div id="hof-list" class="hof-list"></div>
+      </div>
+
+      <!-- Run detail panel (hidden until a run is selected) -->
+      <div id="run-detail" class="hidden">
+
+        <!-- Run Header -->
+        <div class="run-header">
+          <div>
+            <h2 class="run-title" id="run-title-display">RUN NAME</h2>
+            <div class="run-meta">
+              <span id="run-status-badge" class="status-badge status-active">ACTIVE</span>
+              <span class="run-date" id="run-date-display"></span>
+            </div>
+          </div>
+          <div class="run-actions">
+            <select class="input input-sm" id="run-status-select">
+              <option value="active">ACTIVE</option>
+              <option value="won">WON</option>
+              <option value="lost">LOST</option>
+            </select>
+            <button class="btn btn-danger btn-sm" id="delete-run-btn">✕ DELETE RUN</button>
+          </div>
+        </div>
+
+        <!-- Badge Counter -->
+        <div class="panel badge-panel">
+          <div class="panel-title"><span class="panel-icon">◈</span> BADGES</div>
+          <div class="badge-tracker">
+            <div class="badge-tracker-row">
+              <button class="btn btn-sm" id="badge-minus">−</button>
+              <div class="badge-count-display">
+                <span id="badge-count">0</span>
+                <span class="badge-label">/ 8</span>
+              </div>
+              <button class="btn btn-sm" id="badge-plus">+</button>
+            </div>
+            <div class="badge-pips" id="badge-pips"></div>
+          </div>
+        </div>
+
+        <!-- ── RUN BODY: vertical nav + content ── -->
+        <div class="run-body">
+
+          <!-- Vertical tab nav -->
+          <nav class="tab-nav">
+            <button class="tab active" data-tab="party">⚔<span>PARTY</span></button>
+            <button class="tab" data-tab="box">📦<span>BOX</span></button>
+            <button class="tab" data-tab="graveyard">☠<span>GRAVEYARD</span></button>
+            <button class="tab" data-tab="log">📋<span>LOG</span></button>
+            <button class="tab" data-tab="routes">🗺<span>ROUTES</span></button>
+            <button class="tab" data-tab="notes">📝<span>NOTES</span></button>
+            <button class="tab" data-tab="stats">📊<span>STATS</span></button>
+            <button class="tab" data-tab="guide">🎯<span>GUIDE</span></button>
+          </nav>
+
+          <!-- Tab content area -->
+          <div class="tab-area">
+
+        <!-- ── PARTY TAB ── -->
+        <div class="tab-content active" id="tab-party">
+          <div class="panel">
+            <div class="panel-title"><span class="panel-icon">◈</span> CURRENT PARTY</div>
+            <div class="add-pokemon-form" id="party-add-form">
+              <select class="input" id="add-location">
+                <option value="">— Route / Location —</option>
+              </select>
+              <select class="input" id="add-species">
+                <option value="">— Species —</option>
+              </select>
+              <input class="input" placeholder="Nickname" id="add-nickname" />
+              <div id="level-input-wrap"><input class="input input-sm" placeholder="Lv." id="add-level" type="number" min="1" max="100" /></div>
+              <select class="input" id="add-status">
+                <option value="party">Party</option>
+                <option value="box">Box</option>
+              </select>
+              <button class="btn btn-primary" id="add-pokemon-btn">+ ADD</button>
+            </div>
+            <div id="party-list" class="pokemon-grid"></div>
+          </div>
+
+          <!-- ── TEAM BUILDER PANEL ── -->
+          <div id="team-builder-panel"></div>
+        </div>
+
+        <!-- ── BOX PICKER OVERLAY (floating) ── -->
+        <div id="box-picker-overlay" class="hidden">
+          <div class="bp-modal">
+            <div class="bp-header">
+              <span class="bp-title">SELECT POKÉMON</span>
+              <button class="bp-close" onclick="closeBoxPicker()">✕</button>
+            </div>
+            <div id="box-picker-list" class="bp-list"></div>
+          </div>
+        </div>
+
+        <!-- ── BOX TAB ── -->
+        <div class="tab-content hidden" id="tab-box">
+          <div class="panel">
+            <div class="panel-title"><span class="panel-icon">◈</span> PC BOX</div>
+            <div id="box-list" class="pokemon-grid"></div>
+          </div>
+        </div>
+
+        <!-- ── GRAVEYARD TAB ── -->
+        <div class="tab-content hidden" id="tab-graveyard">
+          <div class="panel graveyard-panel">
+            <div class="panel-title"><span class="panel-icon">☠</span> HALL OF THE FALLEN</div>
+            <div id="graveyard-list" class="pokemon-grid"></div>
+          </div>
+        </div>
+
+        <!-- ── LOG TAB ── -->
+        <div class="tab-content hidden" id="tab-log">
+          <div class="panel">
+            <div class="panel-title"><span class="panel-icon">◈</span> FULL CAUGHT LOG</div>
+            <div id="log-list" class="log-table-wrap">
+              <table class="log-table">
+                <thead>
+                  <tr>
+                    <th>SPECIES</th>
+                    <th>NICKNAME</th>
+                    <th>LOCATION</th>
+                    <th>LV.</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody id="log-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ROUTES TAB ── -->
+        <div class="tab-content hidden" id="tab-routes">
+          <div class="panel">
+            <div class="panel-title"><span class="panel-icon">◈</span> ROUTE TABLE</div>
+            <div class="routes-legend">
+              <span class="rl rl-caught">■ CAUGHT</span>
+              <span class="rl rl-skipped">■ SKIPPED</span>
+              <span class="rl rl-open">■ OPEN</span>
+            </div>
+            <div id="route-table-wrap"></div>
+          </div>
+        </div>
+
+        <!-- ── NOTES TAB ── -->
+        <div class="tab-content hidden" id="tab-notes">
+          <div class="panel">
+            <div class="panel-title"><span class="panel-icon">◈</span> RUN NOTES</div>
+            <textarea
+              id="notes-textarea"
+              class="input notes-area"
+              placeholder="Write notes about your run... strategy, deaths, close calls..."
+            ></textarea>
+            <button class="btn btn-primary" id="save-notes-btn">SAVE NOTES</button>
+            <div id="notes-saved-msg" class="save-confirm hidden">✔ SAVED</div>
+          </div>
+        </div>
+
+        <!-- ── GUIDE TAB ── -->
+        <div class="tab-content hidden" id="tab-guide">
+          <div id="tab-guide-content"></div>
+        </div>
+
+        <!-- ── STATS TAB ── -->
+        <div class="tab-content hidden" id="tab-stats">
+          <div id="tab-stats-content"></div>
+        </div>
+
+      </div><!-- end #run-detail -->
+    </section>
+  </main>
+
+  <!-- ── POKÉMON EDIT MODAL ── -->
+  <div class="modal-overlay hidden" id="edit-modal">
+    <div class="modal">
+      <div class="modal-title">EDIT POKÉMON</div>
+      <input class="input" placeholder="Species*" id="edit-species" />
+      <input class="input" placeholder="Nickname" id="edit-nickname" />
+      <input class="input input-sm" placeholder="Level" id="edit-level" type="number" min="1" max="100" />
+      <input class="input" placeholder="Location caught" id="edit-location" />
+      <select class="input" id="edit-status">
+        <option value="party">Party</option>
+        <option value="box">Box</option>
+        <option value="dead">Dead</option>
+      </select>
+      <input class="input" placeholder="Cause of death (if dead)" id="edit-cause" />
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="edit-save-btn">SAVE</button>
+        <button class="btn btn-danger" id="edit-delete-btn">DELETE</button>
+        <button class="btn" id="edit-cancel-btn">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="gamedata.js"></script>
+  <script src="badgedata.js"></script>
+  <script src="gamedata-gen1.js"></script>
+  <script src="gamedata-gen2.js"></script>
+  <script src="gamedata-gen3.js"></script>
+  <script src="gamedata-gen4.js"></script>
+  <script src="gamedata-gen5.js"></script>
+  <script src="gamedata-gen6.js"></script>
+  <script src="gamedata-gen7.js"></script>
+  <script src="gamedata-gen8.js"></script>
+  <script src="gamedata-gen9.js"></script>
+  <script src="gymdata.js"></script>
+  <script src="gymdata-gen1.js"></script>
+  <script src="gymdata-gen2.js"></script>
+  <script src="gymdata-gen3.js"></script>
+  <script src="gymdata-gen4.js"></script>
+  <script src="gymdata-gen5.js"></script>
+  <script src="gymdata-gen6.js"></script>
+  <script src="gymdata-gen7.js"></script>
+  <script src="gymdata-gen8.js"></script>
+  <script src="gymdata-gen9.js"></script>
+  <script src="gamedata-romhacks.js"></script>
+  <script src="typedata.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Zoom Controls (fixed bottom-right) -->
+  <div id="zoom-controls">
+    <button class="zoom-btn" id="zoom-in-btn"  title="Zoom In">+</button>
+    <div id="zoom-level-display">100%</div>
+    <button class="zoom-btn" id="zoom-out-btn" title="Zoom Out">−</button>
+    <button class="zoom-btn" id="zoom-reset-btn" title="Reset Zoom" style="font-size:0.5rem">RST</button>
+  </div>
+
+  <!-- ── DAMAGE CALC FLOATING PANEL ── -->
+  <div id="calc-overlay" class="dex-overlay hidden">
+    <div class="dex-panel calc-panel">
+      <div class="dex-panel-header">
+        <div class="dex-panel-title">
+          <span class="dex-panel-icon">⚔</span> DAMAGE CALCULATOR
+        </div>
+        <div class="dex-panel-controls">
+          <span class="dex-hint">Powered by KinglerCalc · Full Gen 1-9 Nuzlocke data</span>
+          <button class="dex-newtab-btn" onclick="calcOpenTab()" title="Open in new tab">⬡ NEW TAB</button>
+          <button class="dex-theme-btn" id="calc-theme-btn" onclick="toggleCalcTheme()" title="Toggle CSS filter">◑ FILTER OFF</button>
+          <button class="dex-close-btn" onclick="toggleCalc()" title="Close">✕</button>
+        </div>
+      </div>
+      <div id="calc-blocked-banner" class="dex-blocked-banner hidden">
+        ⚠ KinglerCalc blocked embedded display.
+        <button class="dex-blocked-open" onclick="calcOpenTab()">Open in new tab instead →</button>
+      </div>
+      <div class="dex-iframe-wrap">
+        <iframe
+          id="calc-iframe"
+          src="about:blank"
+          class="dex-iframe"
+          title="KinglerCalc Damage Calculator"
+          allowfullscreen
+          onload="calcIframeLoaded(this)"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── POKÉDEX FLOATING PANEL ── -->
+  <div id="dex-overlay" class="dex-overlay hidden">
+    <div class="dex-panel">
+      <div class="dex-panel-header">
+        <div class="dex-panel-title">
+          <span class="dex-panel-icon">◉</span> POKÉDEX
+        </div>
+        <form class="dex-search-form" onsubmit="dexSearch(event)">
+          <input id="dex-search-input" class="dex-search-input"
+                 placeholder="Search Pokémon..." autocomplete="off" spellcheck="false"/>
+          <button class="dex-search-btn" type="submit">▶</button>
+        </form>
+        <div class="dex-panel-controls">
+          <button class="dex-newtab-btn" onclick="dexOpenTab()" title="Open in new tab">⬡ NEW TAB</button>
+          <button class="dex-theme-btn" id="dex-theme-btn" onclick="toggleDexTheme()" title="Toggle CSS filter (for dark-room use). For true dark mode, use the toggle inside Showdown itself.">◑ FILTER OFF</button>
+          <button class="dex-close-btn" onclick="toggleDex()" title="Close">✕</button>
+        </div>
+      </div>
+      <!-- Blocked banner — shown if iframe is blocked by X-Frame-Options -->
+      <div id="dex-blocked-banner" class="dex-blocked-banner hidden">
+        ⚠ Showdown blocked embedded display.
+        <button class="dex-blocked-open" onclick="dexOpenTab()">Open in new tab instead →</button>
+      </div>
+      <div class="dex-iframe-wrap">
+        <iframe
+          id="dex-iframe"
+          src="about:blank"
+          class="dex-iframe"
+          title="Pokémon Showdown Pokédex"
+          allowfullscreen
+          onload="dexIframeLoaded(this)"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

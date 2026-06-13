@@ -1,0 +1,12 @@
+{
+  "name": "nuzlocke-tracker",
+  "version": "1.0.0",
+  "description": "Cyberpunk Nuzlocke Run Tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3"
+  }
+}

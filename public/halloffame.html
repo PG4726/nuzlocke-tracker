@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NUZLOCKE//TRACKER — HALL OF FAME</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { padding-bottom: 60px; }
+
+    /* ── PAGE HEADER ── */
+    .hof-page-header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+    .hof-page-title {
+      font-size: 1.4rem;
+      color: var(--neon-yellow);
+      text-shadow: 0 0 16px rgba(255,215,0,0.5), 0 0 4px rgba(255,215,0,0.8);
+      margin: 0 0 8px;
+    }
+    .hof-page-sub {
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+    .hof-back-btn {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.5rem;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      padding: 6px 14px;
+      text-decoration: none;
+      font-family: 'Press Start 2P', monospace;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .hof-back-btn:hover { background: rgba(0,255,255,0.08); }
+
+    /* ── GRID ── */
+    .hof-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* ── CARD ── */
+    .hof-card {
+      background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(0,0,0,0.4));
+      border: 1px solid rgba(255,215,0,0.3);
+      border-left: 3px solid var(--neon-yellow);
+      border-radius: 4px;
+      padding: 18px;
+      transition: box-shadow 0.2s;
+    }
+    .hof-card:hover {
+      box-shadow: 0 0 16px rgba(255,215,0,0.15);
+    }
+    .hof-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .hof-game   { font-size: 0.65rem; color: var(--neon-yellow); }
+    .hof-run-num { color: var(--text-dim); }
+    .hof-meta   { font-size: 0.48rem; color: var(--text-dim); margin-top: 5px; }
+    .hof-won-badge {
+      font-size: 0.48rem;
+      background: rgba(255,215,0,0.12);
+      border: 1px solid var(--neon-yellow);
+      color: var(--neon-yellow);
+      padding: 3px 8px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    /* ── SPRITES ROW ── */
+    .hof-sprites {
+      display: flex;
+      gap: 4px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+    .hof-sprite-wrap {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,215,0,0.12);
+      border-radius: 4px;
+      position: relative;
+    }
+    .hof-sprite-wrap img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .hof-sprite-name {
+      position: absolute;
+      bottom: 2px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.3rem;
+      color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 2px;
+    }
+    .sprite-unknown { font-size: 1.4rem; color: var(--text-dim); }
+
+    /* ── STATS ── */
+    .hof-stats {
+      display: flex;
+      gap: 14px;
+      font-size: 0.48rem;
+      color: var(--text-dim);
+      margin: 10px 0 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .hof-stat-val       { color: var(--text-bright); }
+    .hof-stat-deaths    { color: var(--neon-red) !important; }
+    .hof-badge-pips {
+      display: inline-flex;
+      gap: 3px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+    .hof-pip {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--neon-yellow);
+      box-shadow: 0 0 4px rgba(255,215,0,0.6);
+    }
+
+    /* ── NOTES ── */
+    .hof-notes {
+      font-size: 0.48rem;
+      color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 10px;
+      margin-top: 6px;
+      white-space: pre-wrap;
+      max-height: 52px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    }
+
+    /* ── EMPTY / LOADING ── */
+    .hof-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.55rem;
+      padding: 60px 20px;
+      border: 1px dashed rgba(255,215,0,0.2);
+      border-radius: 4px;
+    }
+
+    /* ── DIVIDER ── */
+    .hof-divider {
+      max-width: 1100px;
+      margin: 0 auto 0;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.45rem;
+      color: var(--text-dim);
+    }
+    .hof-divider::before, .hof-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,215,0,0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="logo">NUZLOCKE<span class="logo-slash">//</span>TRACKER</h1>
+      <div class="header-sub">HALL OF FAME <span class="blink">▮</span></div>
+    </div>
+  </header>
+
+  <div class="hof-page-header">
+    <div class="hof-page-title">🏆 HALL OF FAME</div>
+    <div class="hof-page-sub">COMPLETED NUZLOCKE RUNS — THE FALLEN ARE NOT FORGOTTEN</div>
+    <a href="/" class="hof-back-btn">◄ BACK TO TRACKER</a>
+  </div>
+
+  <div class="hof-divider">VICTORIES</div>
+
+  <div class="hof-grid" id="hof-grid">
+    <div class="hof-empty">LOADING...</div>
+  </div>
+
+  <script src="gamedata.js"></script>
+  <script>
+    function showdownName(species) {
+      return species.toLowerCase().trim()
+        .replace(/['.:\u2019]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/--+/g, '-');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function onHofSpriteError(img) {
+      if (img.dataset.fallback) {
+        img.parentElement.innerHTML = '<div class="sprite-unknown">?</div>';
+      } else {
+        img.dataset.fallback = '1';
+        img.src = `https://play.pokemonshowdown.com/sprites/gen5/${showdownName(img.alt)}.png`;
+      }
+    }
+
+    async function loadHallOfFame() {
+      const grid = document.getElementById('hof-grid');
+      try {
+        const allRuns = await fetch('/api/runs').then(r => r.json());
+        const wonRuns = allRuns.filter(r => r.status === 'won');
+
+        if (!wonRuns.length) {
+          grid.innerHTML = '<div class="hof-empty">NO COMPLETED RUNS YET.<br/><br/>WIN A NUZLOCKE TO ENTER THE HALL OF FAME.</div>';
+          return;
+        }
+
+        const runData = await Promise.all(
+          wonRuns.map(async run => {
+            const pokemon = await fetch(`/api/runs/${run.id}/pokemon`).then(r => r.json());
+            return { run, pokemon };
+          })
+        );
+
+        const gameCount = {};
+        grid.innerHTML = runData.map(({ run, pokemon }) => {
+          gameCount[run.game] = (gameCount[run.game] || 0) + 1;
+          const runNum     = gameCount[run.game];
+          const party      = pokemon.filter(m => m.status === 'party' || m.status === 'box');
+          const deathCount = pokemon.filter(m => m.status === 'dead').length;
+          const date       = new Date(run.created_at).toLocaleDateString();
+          const notesSnip  = (run.notes || '').trim();
+
+          const sprites = party.slice(0, 6).map(mon => {
+            const label = mon.nickname
+              ? escapeHtml(mon.nickname)
+              : escapeHtml(mon.species);
+            return `
+              <div class="hof-sprite-wrap">
+                <img
+                  src="https://play.pokemonshowdown.com/sprites/ani/${showdownName(mon.species)}.gif"
+                  alt="${escapeHtml(mon.species)}"
+                  title="${label} (${escapeHtml(mon.species)})"
+                  onerror="onHofSpriteError(this)"
+                />
+                <div class="hof-sprite-name">${label}</div>
+              </div>`;
+          }).join('');
+
+          const badgePips = Array.from({ length: run.badges }, () =>
+            '<div class="hof-pip"></div>'
+          ).join('');
+
+          return `
+            <div class="hof-card">
+              <div class="hof-card-top">
+                <div>
+                  <div class="hof-game">
+                    ${escapeHtml(run.game)}
+                    <span class="hof-run-num">#${runNum}</span>
+                  </div>
+                  <div class="hof-meta">STARTED ${date}</div>
+                </div>
+                <span class="hof-won-badge">✦ WON</span>
+              </div>
+
+              <div class="hof-sprites">
+                ${sprites || '<span style="color:var(--text-dim);font-size:0.5rem;font-family:\'Share Tech Mono\',monospace">NO PARTY DATA</span>'}
+              </div>
+
+              <div class="hof-stats">
+                <span>BADGES <span class="hof-stat-val">${run.badges}</span>
+                  <span class="hof-badge-pips">${badgePips}</span>
+                </span>
+                <span>DEATHS <span class="hof-stat-val hof-stat-deaths">${deathCount}</span></span>
+                <span>CAUGHT <span class="hof-stat-val">${pokemon.length}</span></span>
+              </div>
+
+              ${notesSnip ? `<div class="hof-notes">${escapeHtml(notesSnip)}</div>` : ''}
+            </div>`;
+        }).join('');
+
+      } catch (err) {
+        grid.innerHTML = '<div class="hof-empty">ERROR LOADING DATA.<br/>IS THE SERVER RUNNING?</div>';
+        console.error(err);
+      }
+    }
+
+    loadHallOfFame();
+  </script>
+</body>
+</html>
