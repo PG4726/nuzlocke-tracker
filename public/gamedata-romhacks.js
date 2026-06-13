@@ -168,58 +168,6 @@ Object.assign(GAME_DATA, {
   },
 
   // ══════════════════════════════════════════════════════════════
-  //  BLAZE BLACK / VOLT WHITE (Unova — Black/White base)
-  // ══════════════════════════════════════════════════════════════
-
-  "Blaze Black": {
-    badgeCount: 8,
-    routes: [
-      { name: "Route 1",           encounters: ["Patrat", "Lillipup", "Purrloin", "Pidove"] },
-      { name: "Route 2",           encounters: ["Patrat", "Lillipup", "Purrloin", "Pidove", "Mareep", "Growlithe"] },
-      { name: "Route 3",           encounters: ["Pidove", "Blitzle", "Venipede", "Timburr", "Tynamo"] },
-      { name: "Route 4",           encounters: ["Sandile", "Darumaka", "Scraggy", "Maractus", "Gothita", "Solosis"] },
-      { name: "Route 5",           encounters: ["Minccino", "Liepard", "Gothita", "Solosis", "Trubbish"] },
-      { name: "Route 6",           encounters: ["Deerling", "Karrablast", "Shelmet", "Foongus", "Emolga"] },
-      { name: "Route 7",           encounters: ["Deerling", "Cubchoo", "Foongus", "Mienfoo", "Absol"] },
-      { name: "Route 8",           encounters: ["Frillish", "Shellder", "Corsola"] },
-      { name: "Route 9",           encounters: ["Garbodor", "Liepard", "Zangoose", "Seviper"] },
-      { name: "Route 10",          encounters: ["Bouffalant", "Heatmor", "Durant", "Mienfoo", "Rufflet", "Vullaby"] },
-      { name: "Route 11",          encounters: ["Joltik", "Fraxure", "Axew", "Larvesta"] },
-      { name: "Route 12",          encounters: ["Stunfisk", "Basculin", "Palpitoad"] },
-      { name: "Route 13",          encounters: ["Tangela", "Tangrowth", "Mienfoo", "Absol"] },
-      { name: "Route 14",          encounters: ["Beartic", "Mienshao", "Zoroark", "Cobalion"] },
-      { name: "Route 15",          encounters: ["Pawniard", "Vullaby", "Rufflet", "Druddigon"] },
-      { name: "Route 16",          encounters: ["Gothorita", "Duosion", "Emolga", "Audino"] },
-      { name: "Route 17",          encounters: ["Frillish", "Jellicent", "Basculin"] },
-      { name: "Route 18",          encounters: ["Druddigon", "Bouffalant", "Heatmor", "Durant"] },
-      { name: "Pinwheel Forest",   encounters: ["Sewaddle", "Venipede", "Cottonee", "Petilil", "Pidove", "Tympole", "Timburr", "Throh", "Sawk"] },
-      { name: "Lostlorn Forest",   encounters: ["Roselia", "Swadloon", "Whimsicott", "Lilligant", "Vespiquen"] },
-      { name: "Cold Storage",      encounters: ["Vanillite", "Frillish", "Cryogonal"] },
-      { name: "Chargestone Cave",  encounters: ["Joltik", "Klink", "Ferroseed", "Boldore", "Tynamo"] },
-      { name: "Twist Mountain",    encounters: ["Boldore", "Cryogonal", "Cubchoo", "Woobat", "Gurdurr"] },
-      { name: "Dragonspiral Tower",encounters: ["Druddigon", "Golurk", "Golett", "Mienfoo"] },
-      { name: "Relic Castle",      encounters: ["Sandile", "Krokorok", "Darumaka", "Yamask", "Baltoy"] },
-      { name: "Mistralton Cave",   encounters: ["Boldore", "Woobat", "Axew", "Cobalion"] },
-      { name: "Victory Road",      encounters: ["Boldore", "Woobat", "Golurk", "Druddigon", "Deino", "Pawniard"] },
-      // Gifts/Statics
-      { name: "Gift — Snivy (Nuvema Town)",   encounters: ["Snivy"] },
-      { name: "Gift — Tepig (Nuvema Town)",   encounters: ["Tepig"] },
-      { name: "Gift — Oshawott (Nuvema Town)",encounters: ["Oshawott"] },
-      { name: "Gift — Zorua (Castelia City)", encounters: ["Zorua"] },
-      { name: "Gift — Larvesta (Egg — Route 18)", encounters: ["Larvesta"] },
-      { name: "Static — Cobalion (Route 13)", encounters: ["Cobalion"] },
-      { name: "Static — Terrakion (Victory Road)", encounters: ["Terrakion"] },
-      { name: "Static — Virizion (Pinwheel Forest)", encounters: ["Virizion"] },
-      { name: "Static — Reshiram/Zekrom (Dragon Spiral)", encounters: ["Reshiram", "Zekrom"] },
-    ]
-  },
-
-  "Volt White": {
-    badgeCount: 8,
-    routes: [] // Same encounters as Blaze Black — populated after load
-  },
-
-  // ══════════════════════════════════════════════════════════════
   //  BLAZE BLACK 2 / VOLT WHITE 2 (Unova — B2W2 base)
   // ══════════════════════════════════════════════════════════════
 
@@ -279,6 +227,70 @@ Object.assign(GAME_DATA, {
   //  All Pokémon available by Brock, abilities changed, etc.
   // ══════════════════════════════════════════════════════════════
 
+  // ══════════════════════════════════════════════════════════════
+  //  BLAZE BLACK / VOLT WHITE (Unova — BW base)
+  //  By Drayano. All 649 Pokémon available. Every route expanded.
+  //  Volt White mirrors Blaze Black routes (minor version diffs noted).
+  //  Version diffs: BB gets Zekrom/Thundurus/red Basculin/pink Shellos,
+  //                 VW gets Reshiram/Tornadus/blue Basculin/blue Shellos.
+  // ══════════════════════════════════════════════════════════════
+
+  "Blaze Black": {
+    badgeCount: 8,
+    routes: [
+      { name: "Route 1",             encounters: ["Lillipup", "Pidgey", "Bidoof", "Sentret", "Rattata", "Zigzagoon", "Starly", "Hoothoot"] },
+      { name: "Route 2",             encounters: ["Purrloin", "Patrat", "Kricketot", "Caterpie", "Wurmple", "Weedle", "Poochyena", "Meowth", "Spearow", "Mankey"] },
+      { name: "Striaton City",       encounters: ["Marill", "Psyduck", "Slowpoke", "Staryu", "Basculin"] },
+      { name: "Dreamyard",           encounters: ["Munna", "Drowzee", "Spinda", "Natu", "Venonat", "Ralts", "Clefairy", "Jigglypuff", "Nidoran♂", "Nidoran♀", "Togepi", "Jirachi"] },
+      { name: "Route 3",             encounters: ["Mareep", "Taillow", "Shellos", "Sunkern", "Lotad", "Seedot", "Shinx", "Abra", "Phanpy", "Blitzle", "Pidove", "Growlithe", "Vulpix", "Hoppip", "Budew", "Houndour"] },
+      { name: "Wellspring Cave",     encounters: ["Woobat", "Zubat", "Geodude", "Roggenrola", "Aron", "Whismur", "Wooper", "Bronzor", "Axew", "Teddiursa", "Gible", "Diglett"] },
+      { name: "Pinwheel Forest",     encounters: ["Tympole", "Timburr", "Meditite", "Spinarak", "Ledyba", "Machop", "Makuhita", "Croagunk", "Slakoth", "Throh", "Sawk", "Dunsparce", "Doduo", "Snubbull", "Aipom", "Cubone", "Heracross", "Cottonee", "Petilil", "Sewaddle", "Venipede", "Oddish", "Bellsprout", "Shroomish", "Exeggcute", "Murkrow", "Misdreavus", "Snivy", "Pansage", "Panpour", "Pansear", "Bulbasaur", "Chikorita", "Treecko", "Turtwig"] },
+      { name: "Liberty Garden",      encounters: ["Victini"] },
+      { name: "Route 4",             encounters: ["Sandile", "Sandshrew", "Darumaka", "Scraggy", "Cacnea", "Trapinch", "Vullaby", "Hippopotas", "Elgyem", "Frillish", "Clamperl", "Relicanth"] },
+      { name: "Desert Resort",       encounters: ["Sandile", "Sandshrew", "Darumaka", "Scraggy", "Cacnea", "Dwebble", "Baltoy", "Trapinch", "Hippopotas", "Gligar", "Maractus", "Sigilyph", "Skarmory", "Darmanitan"] },
+      { name: "Relic Castle",        encounters: ["Sandile", "Sandshrew", "Rhyhorn", "Numel", "Golett", "Bronzor", "Onix", "Trapinch", "Yamask", "Gastly", "Shuppet", "Duskull", "Elgyem", "Litwick", "Beldum", "Larvitar", "Larvesta", "Krokorok", "Cofagrigus", "Vibrava", "Hippowdon", "Sandslash", "Claydol", "Sigilyph", "Darmanitan", "Unown", "Regirock", "Registeel", "Regigigas", "Volcarona"] },
+      { name: "Route 5",             encounters: ["Solosis", "Gothita", "Koffing", "Trubbish", "Gulpin", "Grimer", "Ditto", "Mime Jr.", "Bonsly", "Pachirisu", "Nidorina", "Nidorino", "Rufflet", "Lickitung", "Smeargle", "Minccino", "Miltank", "Tauros", "Bagon", "Munchlax"] },
+      { name: "Route 16",            encounters: ["Ekans", "Pineco", "Skorupi", "Electrike", "Combee", "Paras", "Buneary", "Pawniard", "Drifloon", "Spoink", "Zangoose", "Seviper", "Stunky", "Glameow", "Slugma", "Vespiquen", "Parasect", "Girafarig"] },
+      { name: "Lostlorn Forest",     encounters: ["Karrablast", "Shelmet", "Yanma", "Pichu", "Psyduck", "Surskit", "Farfetch'd", "Chatot", "Misdreavus", "Murkrow", "Escavalier", "Accelgor", "Zorua", "Eevee", "Pikachu", "Kecleon", "Whimsicott", "Lilligant", "Mew", "Celebi"] },
+      { name: "Driftveil City",      encounters: ["Frillish", "Tentacool", "Staryu", "Horsea", "Wailmer", "Mantyke"] },
+      { name: "Cold Storage",        encounters: ["Vanillite", "Herdier", "Snorunt", "Swinub", "Cubchoo", "Buizel", "Mienfoo", "Taillow", "Vanillish", "Floatzel", "Sneasel", "Delibird", "Smoochum", "Piloswine"] },
+      { name: "Route 6",             encounters: ["Cherubi", "Deerling", "Stantler", "Foongus", "Pidgeotto", "Natu", "Mime Jr.", "Bonsly", "Plusle", "Minun", "Cherrim", "Sawsbuck", "Xatu", "Mr. Mime", "Sudowoodo", "Chansey", "Snover", "Finneon", "Goldeen", "Chinchou"] },
+      { name: "Chargestone Cave",    encounters: ["Joltik", "Klink", "Elekid", "Magnemite", "Voltorb", "Ferroseed", "Nosepass", "Lairon", "Mawile", "Sableye", "Tynamo", "Durant", "Deino", "Galvantula", "Klang", "Electabuzz", "Magneton", "Electrode", "Ferrothorn", "Eelektrik", "Porygon", "Rotom", "Zapdos"] },
+      { name: "Route 7",             encounters: ["Ponyta", "Aipom", "Magby", "Nincada", "Doduo", "Cubone", "Skarmory", "Pachirisu", "Torkoal", "Gligar", "Rapidash", "Ambipom", "Magmar", "Ninjask", "Dodrio", "Marowak", "Heatmor", "Bouffalant", "Miltank", "Tauros"] },
+      { name: "Celestial Tower",     encounters: ["Litwick", "Elgyem", "Chingling", "Gastly", "Duskull", "Shuppet", "Wynaut", "Bronzor", "Lampent", "Beheeyem", "Chimecho", "Haunter", "Dusclops", "Banette", "Wobbuffet", "Bronzong", "Misdreavus", "Murkrow", "Drifblim", "Noctowl", "Absol", "Spiritomb", "Cresselia"] },
+      { name: "Route 17 / 18",       encounters: ["Wailmer", "Corsola", "Mantyke", "Wailord", "Mantine", "Luvdisc", "Alomomola", "Throh", "Sawk", "Heracross", "Munchlax", "Dwebble", "Lickitung", "Kangaskhan", "Tropius", "Snorlax", "Lickilicky", "Carvanha", "Qwilfish", "Sharpedo", "Manaphy", "Phione"] },
+      { name: "P2 Laboratory",       encounters: ["Porygon", "Klang", "Magneton", "Electrode", "Kingler", "Shuckle", "Porygon2", "Wingull", "Tentacool", "Pelipper"] },
+      { name: "Mistralton Cave",     encounters: ["Onix", "Rhyhorn", "Larvitar", "Bagon", "Beldum", "Gible", "Axew", "Deino", "Steelix", "Rhydon", "Pupitar", "Shelgon", "Metang", "Gabite", "Fraxure", "Zweilous", "Uxie", "Mesprit", "Azelf", "Cobalion"] },
+      { name: "Twist Mountain",      encounters: ["Phanpy", "Teddiursa", "Cubchoo", "Sneasel", "Delibird", "Swinub", "Graveler", "Boldore", "Cryogonal", "Gurdurr", "Donphan", "Ursaring", "Beartic", "Piloswine", "Mawile", "Sableye", "Durant", "Regice"] },
+      { name: "Icirrus City / Route 8", encounters: ["Palpitoad", "Stunfisk", "Croagunk", "Gulpin", "Koffing", "Grimer", "Gastrodon", "Quagsire", "Toxicroak", "Swalot", "Weezing", "Muk", "Barboach", "Whiscash", "Seismitoad"] },
+      { name: "Moor of Icirrus",     encounters: ["Quagsire", "Stunfisk", "Gastrodon", "Toxicroak", "Swalot", "Weezing", "Muk", "Palpitoad", "Keldeo"] },
+      { name: "Dragonspiral Tower",  encounters: ["Mienfoo", "Deerling", "Druddigon", "Swablu", "Kadabra", "Mienshao", "Sawsbuck", "Altaria", "Alakazam", "Snover", "Cubchoo", "Vanillite", "Abomasnow", "Beartic", "Vanillish", "Horsea", "Dratini", "Seadra", "Dragonair", "Kingdra", "Dragonite", "Baltoy", "Golett", "Claydol", "Golurk", "Articuno", "Suicune"] },
+      { name: "Route 9",             encounters: ["Gothorita", "Duosion", "Kirlia", "Minccino", "Pawniard", "Skitty", "Liepard", "Persian", "Flaaffy", "Luxio", "Hypno", "Cinccino", "Bisharp", "Garbodor", "Houndoom", "Granbull", "Gothitelle", "Reuniclus", "Raikou", "Entei"] },
+      { name: "Route 10",            encounters: ["Herdier", "Pidgeotto", "Rufflet", "Vullaby", "Machoke", "Primeape", "Amoonguss", "Tranquill", "Mandibuzz", "Braviary", "Bouffalant", "Grumpig", "Drapion", "Scrafty", "Heracross", "Manectric", "Linoone", "Bibarel", "Skiploom", "Arbok", "Sandslash", "Dodrio", "Zangoose", "Seviper", "Scyther", "Pinsir", "Chansey", "Blissey", "Thundurus", "Latias", "Latios"] },
+      { name: "Victory Road",        encounters: ["Heatmor", "Torkoal", "Mandibuzz", "Braviary", "Skarmory", "Gliscor", "Pupitar", "Fraxure", "Donphan", "Ursaring", "Zweilous", "Woobat", "Hariyama", "Medicham", "Lairon", "Azumarill", "Excadrill", "Dugtrio", "Steelix", "Sandslash", "Dewgong", "Lapras", "Basculin", "Gyarados", "Whiscash", "Loudred", "Durant", "Golbat", "Klang", "Rhydon", "Boldore", "Gurdurr", "Terrakion"] },
+      { name: "Giant Chasm",         encounters: ["Clefairy", "Piloswine", "Vanillish", "Metang", "Deino", "Herdier", "Ditto", "Jigglypuff", "Mamoswine", "Vanilluxe", "Metagross", "Zweilous", "Stoutland", "Lugia"] },
+      { name: "Challenger's Cave",   encounters: ["Mienfoo", "Aron", "Woobat", "Golbat", "Mienshao", "Lairon", "Boldore", "Excadrill", "Dugtrio", "Steelix", "Sandslash", "Tentacruel", "Kingler", "Crawdaunt", "Kyurem"] },
+      // ── GIFTS / STATICS ──
+      { name: "Gift — Snivy (Nuvema Town)",    encounters: ["Snivy"] },
+      { name: "Gift — Tepig (Nuvema Town)",    encounters: ["Tepig"] },
+      { name: "Gift — Oshawott (Nuvema Town)", encounters: ["Oshawott"] },
+      { name: "Gift — Zorua (Castelia City)",  encounters: ["Zorua"] },
+      { name: "Static — Zekrom / Reshiram",    encounters: ["Zekrom", "Reshiram"] },
+      { name: "Static — Victini (Liberty Garden)", encounters: ["Victini"] },
+      { name: "Static — Cobalion (Mistralton Cave)", encounters: ["Cobalion"] },
+      { name: "Static — Virizion (Pinwheel Forest)", encounters: ["Virizion"] },
+      { name: "Static — Terrakion (Victory Road)", encounters: ["Terrakion"] },
+      { name: "Static — Kyurem (Giant Chasm)", encounters: ["Kyurem"] },
+    ]
+  },
+
+  "Volt White": {
+    badgeCount: 8,
+    routes: [] // Mirrors Blaze Black — minor version diffs (Reshiram/Tornadus/blue Basculin/blue Shellos vs Zekrom/Thundurus/red)
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  //  RADICAL RED (Kanto — FireRed base)
   "Radical Red": {
     badgeCount: 8,
     routes: [

@@ -372,6 +372,14 @@ const REPEL_STRATS = [
   { game:"Gen 5 (B2W2)",  route:"Reversal Mountain",    repel:"Super Repel", target:"Heatran (post-game)",trick:"Lead lv.65, repels Numel/Buneary, forces Heatran encounter",steps:"300 steps" },
   { game:"Gen 5 (B2W2)",  route:"Floccesy Ranch",       repel:"Repel",       target:"Mareep",             trick:"Lead lv.3 — Repel blocks nothing but forces you into only lv.4 slot",steps:"50 steps" },
 
+  // ── BLAZE BLACK / VOLT WHITE ──
+  { game:"Blaze Black/VW", route:"Relic Castle B1F",    repel:"Max Repel",   target:"Beldum",             trick:"Lead lv.10-11 repels common sand mons; Beldum appears at lv.12",steps:"200 steps" },
+  { game:"Blaze Black/VW", route:"Relic Castle B1F",    repel:"Max Repel",   target:"Larvitar",           trick:"Lead lv.10-11; Larvitar at lv.12 in sand — same floor as Beldum",steps:"200 steps" },
+  { game:"Blaze Black/VW", route:"Chargestone Cave B2F",repel:"Super Repel", target:"Rotom",              trick:"Lead lv.35 repels Joltik/Klink; Rotom appears at lv.36-38",steps:"200 steps" },
+  { game:"Blaze Black/VW", route:"Lostlorn Forest",     repel:"Max Repel",   target:"Zorua / Eevee",      trick:"Lead lv.22+ repels Karrablast/Shelmet; Zorua/Eevee appear at lv.23",steps:"150 steps" },
+  { game:"Blaze Black/VW", route:"Route 9 (shaking)",   repel:"Max Repel",   target:"Raikou / Entei",     trick:"Lead lv.48, repels Audino; legendaries in shaking grass at lv.50",steps:"Use shaking grass only" },
+  { game:"Blaze Black/VW", route:"Route 10 (shaking)",  repel:"Super Repel", target:"Thundurus / Tornadus",trick:"Lead lv.37; legendary in shaking grass at lv.40 — won't run (unique to BB/VW!)",steps:"Shaking grass only" },
+
   // ── GEN 6 ──
   { game:"Gen 6 (XY)",    route:"Friend Safari",         repel:"N/A",         target:"Any Safari species", trick:"Friend Safari species are fixed per friend — no level trick needed, encounters always lv.30",steps:"No steps needed" },
   { game:"Gen 6 (XY)",    route:"Route 21",              repel:"Super Repel", target:"Hawlucha",           trick:"Lead lv.30, repels Noctowl/Altaria, forces Hawlucha at lv.31-32",steps:"200 steps" },
@@ -536,6 +544,16 @@ const FACTS = [
   { cat:"LORE",      text:"Lavender Town's original BGM in the Japanese release had a higher-pitched, dissonant version. The Lavender Town Syndrome creepypasta claims it caused headaches in children — fabricated, but the music WAS changed between versions and the original IS measurably more abrasive." },
   { cat:"LORE",      text:"AZ's Floette in X/Y cannot be obtained legitimately. The data exists in the game with unique stats, but no event was ever distributed. Game Freak cited 'not wanting to make AZ's story feel less special' — the only time narrative reasons were given for withholding a Pokémon." },
   { cat:"LORE",      text:"In Scarlet and Violet, the professor who sends you emails is dead before the game begins. This is not ambiguous — the timeline makes it impossible for them to have survived. Every piece of dialogue takes on a different tone once you realise." },
+
+  // ── BLAZE BLACK / VOLT WHITE SPECIFIC ──
+  { cat:"TECH",      text:"In Blaze Black / Volt White, Thundurus (BB) and Tornadus (VW) don't roam — they wait stationary in shaking grass on Route 10. Use a Max Repel with a lv.37 lead to force the encounter. This is unique among all roaming legends." },
+  { cat:"TECH",      text:"BB/VW gives you every starter from Gen 1–4 in the wild by Gym 3. Dreamyard has Jirachi at 1% in shaking grass. Lostlorn Forest has both Mew AND Celebi in doubles grass. Route 3 has starter Pokémon as normal encounters — you are spoilt for choice early." },
+  { cat:"NUZLOCKE",  text:"In Blaze Black / Volt White, Burgh's gym is a Double Battle with 6 Pokémon. Leavanny uses Swords Dance — if it moves first it can two-shot most of your team. Lead with Fire moves and prioritise it immediately." },
+  { cat:"NUZLOCKE",  text:"Drayden in BB/VW is a Rotation Battle with 6 Dragon types including Charizard and Salamence. Both have Fire coverage that walls Ice users. Bring a Fairy or Dragon move user AND a backup Ice Beam attacker." },
+  { cat:"NUZLOCKE",  text:"The E4 in BB/VW Round 1 are all Double Battles. Bring Pokémon that can handle doubles pressure — spread moves like Earthquake hit your own partner. Fainting a partner in doubles counts as a death in Nuzlocke." },
+  { cat:"ITEMS",     text:"In BB/VW, Gliscor on Skyla's team holds a Toxic Orb for Poison Heal. Electric and Ice moves still KO it, but don't try to stall it out — it heals more than it takes each turn from status." },
+  { cat:"SPEED",     text:"In BB/VW, Clay's Excadrill has Sand Rush but there's no permanent sandstorm. If Clay uses a sandstorm move mid-fight, Excadrill's Speed doubles — be ready to revenge kill with priority." },
+  { cat:"GRINDING",  text:"BB/VW has an Audino rework: shaking grass appears everywhere. Audino grinding is extremely fast — you can over-level quickly. If you're using level caps for Nuzlocke, be strict about not grinding past the next gym leader's ace." },
 ];
 
 let lastFactIndex = -1;
